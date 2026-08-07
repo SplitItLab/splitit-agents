@@ -20,13 +20,13 @@ const mono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "pm-agents",
-  description: "A Next.js starter for eve agents with AI Elements.",
+  title: "PM Tools · SplitIt",
+  description: "Agentes del PM general del proyecto SplitIt: reportes, backlog y reuniones.",
 };
 
 export default function RootLayout({ children }: { readonly children: ReactNode }) {
   return (
-    <html className={cn(sans.variable, mono.variable)} lang="en">
+    <html className={cn(sans.variable, mono.variable)} lang="es">
       <body>
         <TooltipProvider>{children}</TooltipProvider>
       </body>
