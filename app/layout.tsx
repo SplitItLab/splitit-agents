@@ -20,8 +20,8 @@ const mono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "PM Tools · SplitIt",
-  description: "Agentes del PM general del proyecto SplitIt: reportes, backlog y reuniones.",
+  title: "Sala de control PM · SplitIt",
+  description: "Estado, decisiones y próximos pasos del proyecto SplitIt.",
 };
 
 export default function RootLayout({ children }: { readonly children: ReactNode }) {

@@ -34,3 +34,5 @@ Según la acción pedida (reporte semanal, avance, atrasos, bloqueos, PRs o ries
 6. **Riesgos** para el próximo hito.
 7. **Próximas 3 acciones recomendadas**.
 8. **Decisiones que debe tomar el PM**.
+
+Para cada bloqueo, riesgo o decisión, incluí la evidencia disponible, responsable y fecha objetivo. Si Linear no informa alguno, marcá "sin definir". Terminá con una cola de atención de hasta 5 ítems, ordenada por urgencia, para que el PM pueda actuar sin reinterpretar el reporte.

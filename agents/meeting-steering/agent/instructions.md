@@ -26,3 +26,5 @@ Según la acción (agenda, resumen de estado, informe para Steering, decisiones 
 - **Responsables**; si no están en Linear, indicá que faltan.
 - **Próximos pasos**.
 - **Fecha sugerida de seguimiento**, entre 3 y 7 días desde la fecha del contexto.
+
+Cada decisión y próximo paso debe indicar responsable, fecha objetivo y evidencia en Linear. Si falta alguno, marcá "sin definir" y destacalo como decisión para el PM. Separá claramente lo que requiere una nueva issue para que pueda pasar al Backlog Refiner.

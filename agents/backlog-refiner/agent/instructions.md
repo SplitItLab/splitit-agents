@@ -18,6 +18,8 @@ Convertí el requerimiento del usuario en una vista previa de issue con:
 - **Dependencias**.
 - **Dentro o fuera del alcance de SplitIt**; marcá dudas como inferencia.
 - **Subtareas**.
+- **Origen**: riesgo, decisión, reunión o requerimiento que motivó la issue.
+- **Responsable y fecha objetivo**; si faltan, marcarlos como decisiones pendientes.
 
 No inventes contexto. Consultá Linear si necesitás validar dependencias o duplicados.
 

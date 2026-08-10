@@ -4,23 +4,25 @@ import type { UserContent } from "ai";
 import { useEveAgent } from "eve/react";
 import {
   AlertCircleIcon,
+  ArrowRight,
   BellRing,
   BookOpenCheck,
   CalendarDays,
   ChevronLeft,
   ChevronRight,
   CircleAlert,
+  ClipboardCheck,
   Gauge,
   GitBranch,
-  GraduationCap,
   Link2,
   ListChecks,
   Plus,
   RefreshCw,
+  Sparkles,
   Trash2,
   Users,
 } from "lucide-react";
-import { type FormEvent, useEffect, useState } from "react";
+import { type FormEvent, useEffect, useRef, useState } from "react";
 import {
   Conversation,
   ConversationContent,
@@ -78,6 +80,12 @@ type ConnectionState = {
 type Connections = {
   linear: ConnectionState;
   github: ConnectionState;
+};
+
+type AgentCommand = {
+  id: string;
+  agent: AgentName;
+  prompt: string;
 };
 
 const AGENTS: readonly AgentDef[] = [
@@ -141,6 +149,7 @@ type AgentStatus = ReturnType<typeof useEveAgent>["status"];
 
 export function AgentChat() {
   const [selected, setSelected] = useState<AgentName>("control-tower");
+  const [command, setCommand] = useState<AgentCommand>();
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [connections, setConnections] = useState<Connections>(INITIAL_CONNECTIONS);
   const [refreshing, setRefreshing] = useState(false);
@@ -180,6 +189,12 @@ export function AgentChat() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
   };
 
+  const openAgent = (agent: AgentName, prompt?: string) => {
+    setSelected(agent);
+    if (prompt) setCommand({ id: crypto.randomUUID(), agent, prompt });
+    requestAnimationFrame(() => document.getElementById("agents")?.scrollIntoView({ behavior: "smooth" }));
+  };
+
   return (
     <main className="min-h-dvh bg-background text-foreground">
       <header className="border-b bg-card">
@@ -187,10 +202,10 @@ export function AgentChat() {
           <div className="flex items-start gap-3">
             <span aria-hidden="true" className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary text-lg font-semibold text-primary-foreground">S</span>
             <div className="flex flex-col gap-1">
-              <p className="text-sm font-medium text-primary">Panel PM · SplitIt</p>
-              <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">Buen día, Marcos</h1>
+              <p className="text-sm font-medium text-primary">SplitIt · Sala de control</p>
+              <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">Lo importante, antes de que se atrase.</h1>
               <p className="text-sm text-muted-foreground">
-                Organizá el proyecto, anticipá riesgos y mantené SplitIt en rumbo.
+                Estado, decisiones y próximos pasos del proyecto en un solo lugar.
               </p>
             </div>
           </div>
@@ -202,12 +217,14 @@ export function AgentChat() {
       </header>
 
       <div className="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-6 sm:px-6 lg:px-8">
-        <section className="overflow-hidden rounded-xl border bg-card ring-1 ring-primary/10" aria-labelledby="agents-title">
+        <DailyBrief connections={connections} events={events} onOpenAgent={openAgent} />
+
+        <section className="overflow-hidden rounded-xl border bg-card ring-1 ring-primary/10" aria-labelledby="agents-title" id="agents">
           <div className="flex flex-col gap-4 border-b bg-primary/5 px-4 py-4 sm:px-5">
             <div className="flex items-center justify-between gap-3">
               <div>
-                <h2 className="text-lg font-semibold" id="agents-title">¿Qué necesitás hacer hoy?</h2>
-                <p className="text-sm text-muted-foreground">Los agentes son el centro del panel y trabajan sobre datos reales.</p>
+                <h2 className="text-lg font-semibold" id="agents-title">Resolver con los agentes</h2>
+                <p className="text-sm text-muted-foreground">Abrí el detalle cuando necesites investigar o ejecutar una acción.</p>
               </div>
               <Badge variant="secondary">3 agentes</Badge>
             </div>
@@ -239,7 +256,13 @@ export function AgentChat() {
           </div>
 
           {AGENTS.map((agent) => (
-            <AgentWorkspace agent={agent} hidden={selected !== agent.id} key={agent.id} />
+            <AgentWorkspace
+              agent={agent}
+              command={command?.agent === agent.id ? command : undefined}
+              hidden={selected !== agent.id}
+              key={agent.id}
+              onCommandConsumed={(id) => setCommand((current) => current?.id === id ? undefined : current)}
+            />
           ))}
         </section>
 
@@ -252,18 +275,120 @@ export function AgentChat() {
         <section className="flex flex-col gap-4" aria-labelledby="planning-title">
           <div className="flex items-center gap-3">
             <div>
-              <h2 className="font-semibold" id="planning-title">Planificación académica</h2>
-              <p className="text-sm text-muted-foreground">Calendario y alertas como apoyo a la gestión principal.</p>
+              <h2 className="font-semibold" id="planning-title">Hitos y seguimiento</h2>
+              <p className="text-sm text-muted-foreground">Fechas comprometidas y señales que requieren atención.</p>
             </div>
             <Badge variant="outline">Complementario</Badge>
           </div>
           <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1.8fr)_minmax(280px,0.8fr)]">
-            <AcademicCalendar events={events} onChange={saveEvents} />
+            <ProjectCalendar events={events} onChange={saveEvents} />
             <AlertsPanel connections={connections} events={events} />
           </div>
         </section>
       </div>
     </main>
+  );
+}
+
+function DailyBrief({
+  connections,
+  events,
+  onOpenAgent,
+}: {
+  connections: Connections;
+  events: CalendarEvent[];
+  onOpenAgent: (agent: AgentName, prompt?: string) => void;
+}) {
+  const today = new Date();
+  const nextMilestone = PROJECT_DATES.find((event) => event.date >= dateKey(today));
+  const nextSteering = events
+    .filter((event) => event.type === "steering" && event.date >= dateKey(today))
+    .sort((a, b) => a.date.localeCompare(b.date))[0];
+  const remaining = nextMilestone ? daysUntil(nextMilestone.date) : 0;
+
+  return (
+    <section className="overflow-hidden rounded-xl bg-foreground text-background" aria-labelledby="brief-title">
+      <div className="grid gap-8 px-5 py-6 sm:px-7 sm:py-7 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
+        <div className="max-w-2xl">
+          <div className="mb-5 flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.18em] text-background/60">
+            <Sparkles className="size-3.5" />
+            Brief de hoy · {formatLongDate(today)}
+          </div>
+          <p className="text-sm text-background/65">Próximo compromiso</p>
+          <h2 className="mt-1 text-3xl font-semibold tracking-tight sm:text-4xl" id="brief-title">
+            {nextMilestone?.title ?? "Plan completado"}
+          </h2>
+          <p className="mt-3 max-w-xl text-sm leading-6 text-background/65">
+            {nextMilestone
+              ? `La fecha comprometida es el ${formatShortDate(nextMilestone.date)}. Actualizá el estado con Linear antes de priorizar el día.`
+              : "No quedan hitos futuros cargados en el plan actual."}
+          </p>
+        </div>
+        {nextMilestone ? (
+          <div className="flex items-baseline gap-2 lg:flex-col lg:items-end lg:gap-0" aria-label={`${remaining} días para el próximo hito`}>
+            <span className="font-mono text-6xl font-semibold leading-none tracking-[-0.08em] text-primary sm:text-7xl">{remaining}</span>
+            <span className="font-mono text-xs uppercase tracking-[0.18em] text-background/60">días restantes</span>
+          </div>
+        ) : null}
+      </div>
+
+      <div className="grid border-t border-background/10 lg:grid-cols-3">
+        <BriefAction
+          action="Actualizar estado"
+          detail={connections.linear.status === "connected" ? "Linear conectado" : "Linear requiere atención"}
+          icon={Gauge}
+          onClick={() => onOpenAgent("control-tower", "Generá el brief diario de SplitIt: estado, atrasos, bloqueos, riesgos, decisiones pendientes y las próximas 3 acciones.")}
+          title="Situación del proyecto"
+        />
+        <BriefAction
+          action="Refinar requerimiento"
+          detail="Convertir una necesidad en trabajo listo"
+          icon={ClipboardCheck}
+          onClick={() => onOpenAgent("backlog-refiner")}
+          title="Próxima acción"
+        />
+        <BriefAction
+          action="Preparar reunión"
+          detail={nextSteering ? `${nextSteering.title} · ${formatShortDate(nextSteering.date)}` : "Todavía no hay Steering agendado"}
+          icon={Users}
+          onClick={() => onOpenAgent("meeting-steering", "Prepará la próxima reunión de Steering de SplitIt con estado, decisiones requeridas, responsables y próximos pasos.")}
+          title="Seguimiento"
+        />
+      </div>
+    </section>
+  );
+}
+
+function BriefAction({
+  action,
+  detail,
+  icon: Icon,
+  onClick,
+  title,
+}: {
+  action: string;
+  detail: string;
+  icon: typeof Gauge;
+  onClick: () => void;
+  title: string;
+}) {
+  return (
+    <button
+      className="group flex min-h-28 items-center gap-4 border-background/10 px-5 py-4 text-left transition-colors hover:bg-background/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary lg:border-r last:lg:border-r-0"
+      onClick={onClick}
+      type="button"
+    >
+      <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-background/10 text-primary">
+        <Icon className="size-4" />
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="block text-sm font-medium">{title}</span>
+        <span className="mt-0.5 block truncate text-xs text-background/55">{detail}</span>
+        <span className="mt-2 flex items-center gap-1 text-xs font-medium text-primary">
+          {action} <ArrowRight className="size-3 transition-transform group-hover:translate-x-0.5" />
+        </span>
+      </span>
+    </button>
   );
 }
 
@@ -327,7 +452,7 @@ function ConnectionBadge({ icon: Icon, label, state }: { icon: typeof Link2; lab
   );
 }
 
-function AcademicCalendar({ events, onChange }: { events: CalendarEvent[]; onChange: (events: CalendarEvent[]) => void }) {
+function ProjectCalendar({ events, onChange }: { events: CalendarEvent[]; onChange: (events: CalendarEvent[]) => void }) {
   const today = new Date();
   const [month, setMonth] = useState(() => new Date(today.getFullYear(), today.getMonth(), 1));
   const [title, setTitle] = useState("");
@@ -353,8 +478,8 @@ function AcademicCalendar({ events, onChange }: { events: CalendarEvent[]; onCha
       <div className="flex flex-col gap-4 border-b px-4 py-4 sm:px-5">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h2 className="font-semibold" id="calendar-title">Calendario de cursada</h2>
-            <p className="text-sm text-muted-foreground">Hitos, Steering y fechas académicas en un solo lugar.</p>
+            <h2 className="font-semibold" id="calendar-title">Calendario del proyecto</h2>
+            <p className="text-sm text-muted-foreground">Hitos, reuniones y entregas en un solo lugar.</p>
           </div>
           <div className="flex items-center gap-1">
             <Button aria-label="Mes anterior" onClick={() => setMonth(new Date(month.getFullYear(), month.getMonth() - 1, 1))} size="icon-sm" type="button" variant="ghost">
@@ -386,8 +511,8 @@ function AcademicCalendar({ events, onChange }: { events: CalendarEvent[]; onCha
                 <SelectContent>
                   <SelectGroup>
                     <SelectItem value="steering">Steering</SelectItem>
-                    <SelectItem value="parcial">Parcial</SelectItem>
-                    <SelectItem value="final">Final</SelectItem>
+                    <SelectItem value="parcial">Revisión</SelectItem>
+                    <SelectItem value="final">Entrega</SelectItem>
                   </SelectGroup>
                 </SelectContent>
               </Select>
@@ -434,7 +559,7 @@ function AcademicCalendar({ events, onChange }: { events: CalendarEvent[]; onCha
       <div className="border-t px-4 py-4 sm:px-5">
         <h3 className="mb-3 text-sm font-semibold">Próximas fechas</h3>
         <div className="flex flex-col gap-2">
-          {upcoming.length === 0 ? <p className="text-sm text-muted-foreground">Agregá una fecha para empezar a organizar la cursada.</p> : upcoming.map((event) => (
+          {upcoming.length === 0 ? <p className="text-sm text-muted-foreground">Agregá una fecha para empezar a organizar el proyecto.</p> : upcoming.map((event) => (
             <div className="flex items-center gap-3 rounded-lg bg-muted/55 px-3 py-2" key={event.id}>
               <span className={cn("size-2 rounded-full", eventDot(event.type))} />
               <div className="min-w-0 flex-1">
@@ -457,7 +582,7 @@ function AcademicCalendar({ events, onChange }: { events: CalendarEvent[]; onCha
 function AlertsPanel({ connections, events }: { connections: Connections; events: CalendarEvent[] }) {
   const today = new Date();
   const nextMilestone = PROJECT_DATES.find((event) => event.date >= dateKey(today));
-  const upcomingExam = events
+  const upcomingDelivery = events
     .filter((event) => (event.type === "parcial" || event.type === "final") && event.date >= dateKey(today))
     .sort((a, b) => a.date.localeCompare(b.date))[0];
 
@@ -487,35 +612,48 @@ function AlertsPanel({ connections, events }: { connections: Connections; events
         </Alert>
       ) : null}
 
-      {upcomingExam ? (
+      {upcomingDelivery ? (
         <Alert className="border-warning/35 bg-warning/10">
-          <GraduationCap className="text-warning-foreground" />
-          <AlertTitle>{eventTypeLabel(upcomingExam.type)} próximo</AlertTitle>
-          <AlertDescription>{upcomingExam.title} · {formatShortDate(upcomingExam.date)}</AlertDescription>
+          <CalendarDays className="text-warning-foreground" />
+          <AlertTitle>{eventTypeLabel(upcomingDelivery.type)} próxima</AlertTitle>
+          <AlertDescription>{upcomingDelivery.title} · {formatShortDate(upcomingDelivery.date)}</AlertDescription>
         </Alert>
       ) : (
         <Alert className="border-info/30 bg-info/10">
-          <GraduationCap className="text-info-foreground" />
-          <AlertTitle>Sin parciales cargados</AlertTitle>
-          <AlertDescription>Agregalos al calendario cuando la cátedra confirme las fechas.</AlertDescription>
+          <CalendarDays className="text-info-foreground" />
+          <AlertTitle>Sin revisiones ni entregas adicionales</AlertTitle>
+          <AlertDescription>Agregalas cuando el equipo confirme las fechas.</AlertDescription>
         </Alert>
       )}
 
-      <Alert className="border-warning/30 bg-warning/10">
-        <GitBranch className="text-warning-foreground" />
-        <AlertTitle>GitHub pendiente</AlertTitle>
-        <AlertDescription>No existe un repositorio todavía. Los agentes no buscarán PRs.</AlertDescription>
-      </Alert>
     </section>
   );
 }
 
-function AgentWorkspace({ agent: agentDef, hidden }: { agent: AgentDef; hidden: boolean }) {
+function AgentWorkspace({
+  agent: agentDef,
+  command,
+  hidden,
+  onCommandConsumed,
+}: {
+  agent: AgentDef;
+  command?: AgentCommand;
+  hidden: boolean;
+  onCommandConsumed: (id: string) => void;
+}) {
   const agent = useEveAgent({ agent: agentDef.id });
   const Icon = agentDef.icon;
   const isBusy = agent.status === "submitted" || agent.status === "streaming";
   const isEmpty = agent.data.messages.length === 0;
+  const consumedCommand = useRef<string | undefined>(undefined);
   const context = () => ({ date: new Date().toISOString(), project: "SplitIt", pm: "Marcos" });
+
+  useEffect(() => {
+    if (!command || isBusy || consumedCommand.current === command.id) return;
+    consumedCommand.current = command.id;
+    onCommandConsumed(command.id);
+    void agent.send(command.prompt, { clientContext: context() });
+  }, [command?.id, isBusy]);
 
   const handleSubmit = async (message: PromptInputMessage) => {
     const text = message.text.trim();
@@ -626,7 +764,7 @@ function daysUntil(value: string): number {
 }
 
 function eventTypeLabel(type: EventType): string {
-  return { hito: "Hito", steering: "Steering", parcial: "Parcial", final: "Final" }[type];
+  return { hito: "Hito", steering: "Steering", parcial: "Revisión", final: "Entrega" }[type];
 }
 
 function eventTone(type: EventType): string {
