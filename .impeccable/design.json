@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-12T00:00:00.000Z",
+  "title": "Design System: SplitIt PM Workspace",
+  "extensions": {
+    "colorMeta": {
+      "signal-blue": { "role": "primary", "displayName": "Signal Blue", "canonical": "oklch(0.54 0.18 255)", "tonalRamp": ["oklch(0.2 0.08 255)", "oklch(0.3 0.12 255)", "oklch(0.4 0.15 255)", "oklch(0.54 0.18 255)", "oklch(0.65 0.14 255)", "oklch(0.76 0.1 255)", "oklch(0.87 0.05 255)", "oklch(0.95 0.02 255)"] },
+      "ink": { "role": "neutral", "displayName": "Control Ink", "canonical": "oklch(0.22 0.025 255)", "tonalRamp": ["oklch(0.15 0.025 255)", "oklch(0.22 0.025 255)", "oklch(0.32 0.022 255)", "oklch(0.44 0.018 255)", "oklch(0.58 0.014 255)", "oklch(0.72 0.01 255)", "oklch(0.86 0.007 255)", "oklch(0.95 0.004 255)"] },
+      "canvas": { "role": "neutral", "displayName": "Cool Canvas", "canonical": "oklch(0.975 0.004 255)", "tonalRamp": ["oklch(0.15 0.004 255)", "oklch(0.28 0.004 255)", "oklch(0.42 0.004 255)", "oklch(0.56 0.004 255)", "oklch(0.7 0.004 255)", "oklch(0.82 0.004 255)", "oklch(0.91 0.004 255)", "oklch(0.975 0.004 255)"] }
+    },
+    "typographyMeta": {
+      "headline": { "displayName": "Task Headline", "purpose": "Frames the current task." },
+      "body": { "displayName": "Working Body", "purpose": "Messages and project explanations." },
+      "label": { "displayName": "Interface Label", "purpose": "Navigation, status, and metadata." },
+      "micro": { "displayName": "Micro Metadata", "purpose": "Dates, keyboard hints, and low-emphasis metadata." }
+    },
+    "shadows": [
+      { "name": "state-lift", "value": "0 1px 2px rgb(0 0 0 / 0.05)", "purpose": "Active controls and composer only." }
+    ],
+    "motion": [
+      { "name": "state-transition", "value": "150ms ease-out", "purpose": "Hover, focus, and state feedback." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "lg", "value": "1024px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Advances the current task.",
+      "html": "<button class=\"ds-button-primary\">Continuar</button>",
+      "css": ".ds-button-primary{height:36px;padding:8px 16px;border:0;border-radius:6px;background:var(--primary);color:var(--primary-foreground);font:500 14px Geist,system-ui;transition:background 150ms ease-out}.ds-button-primary:hover{background:color-mix(in oklch,var(--primary) 90%,black)}.ds-button-primary:focus-visible{outline:3px solid color-mix(in oklch,var(--ring) 50%,transparent);outline-offset:2px}"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Supports secondary and utility actions.",
+      "html": "<button class=\"ds-button-ghost\">Cancelar</button>",
+      "css": ".ds-button-ghost{height:36px;padding:8px 12px;border:0;border-radius:6px;background:transparent;color:var(--foreground);font:500 14px Geist,system-ui;transition:background 150ms ease-out}.ds-button-ghost:hover{background:var(--accent)}.ds-button-ghost:focus-visible{outline:3px solid color-mix(in oklch,var(--ring) 50%,transparent);outline-offset:2px}"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Captures compact project data.",
+      "html": "<input class=\"ds-input\" placeholder=\"Nombre\" />",
+      "css": ".ds-input{height:36px;padding:4px 12px;border:1px solid var(--input);border-radius:6px;background:var(--card);color:var(--foreground);font:400 14px Geist,system-ui;transition:border-color 150ms ease-out}.ds-input:focus{border-color:var(--ring);outline:3px solid color-mix(in oklch,var(--ring) 50%,transparent)}"
+    },
+    {
+      "name": "Active Navigation Item",
+      "kind": "nav",
+      "description": "Identifies the current PM agent.",
+      "html": "<button class=\"ds-nav-active\">Control Tower</button>",
+      "css": ".ds-nav-active{width:220px;padding:10px 12px;border:0;border-radius:6px;background:var(--card);color:var(--foreground);box-shadow:0 1px 2px rgb(0 0 0/.05);font:500 14px Geist,system-ui;text-align:left}.ds-nav-active:focus-visible{outline:3px solid color-mix(in oklch,var(--ring) 50%,transparent);outline-offset:2px}"
+    },
+    {
+      "name": "Quick Action Row",
+      "kind": "custom",
+      "description": "Starts a common agent task without creating a card grid.",
+      "html": "<button class=\"ds-action-row\"><span>Brief de hoy</span><span aria-hidden=\"true\">→</span></button>",
+      "css": ".ds-action-row{display:flex;width:100%;justify-content:space-between;padding:14px 0;border:0;border-bottom:1px solid var(--border);background:transparent;color:var(--foreground);font:500 14px Geist,system-ui;text-align:left;transition:color 150ms ease-out}.ds-action-row:hover{color:var(--primary)}.ds-action-row:focus-visible{outline:3px solid color-mix(in oklch,var(--ring) 50%,transparent);outline-offset:2px}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Quiet Control Room",
+    "overview": "A restrained operational surface for a PM working under normal office light and time pressure. The interface disappears into the task and rejects generic AI dashboard theater.",
+    "keyCharacteristics": ["Restrained and immediate controls", "One primary action color", "Compact but readable information density", "Tonal hierarchy instead of decorative containers", "Responsive structure without mobile feature loss"],
+    "rules": [
+      { "name": "The Signal Rule", "body": "Signal Blue is rare. Never use it as decoration or to make inactive content look important.", "section": "colors" },
+      { "name": "The Working Type Rule", "body": "Product copy is sentence case and compact.", "section": "typography" },
+      { "name": "The Tonal First Rule", "body": "Use a surface change or divider before adding shadow.", "section": "elevation" }
+    ],
+    "dos": ["Do make the next action visible without scanning multiple panels.", "Do preserve keyboard access, visible focus, reduced motion, and WCAG 2.2 AA contrast."],
+    "donts": ["Don't create a generic AI dashboard with gradients, chat gimmicks, excessive cards, decorative metrics, or gratuitous motion.", "Don't add chat history, new-chat, or delete-chat management unless a demonstrated workflow requires persistence."]
+  }
+}

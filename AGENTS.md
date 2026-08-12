@@ -18,3 +18,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
 <!-- END:nextjs-agent-rules -->
+
+## Design Context
+
+Read `PRODUCT.md` for product strategy and `DESIGN.md` for the visual system before changing user-facing interfaces. Preserve the quiet, task-focused PM workspace and do not add chat-history management without a demonstrated need.

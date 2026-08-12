@@ -8,14 +8,12 @@ import "./globals.css";
 const sans = Geist({
   variable: "--font-sans",
   subsets: ["latin"],
-  weight: "variable",
   display: "swap",
 });
 
 const mono = Geist_Mono({
   variable: "--font-mono",
   subsets: ["latin"],
-  weight: "variable",
   display: "swap",
 });
 
