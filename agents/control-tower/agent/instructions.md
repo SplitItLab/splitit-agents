@@ -15,7 +15,7 @@ Prioridades: controlar alcance, trazabilidad requisito-entregable, cumplir hitos
 ## Fuentes y reglas
 
 - Consultá Linear antes de informar estado.
-- No inventes datos. Separá `[hecho]`, `[inferencia]` y `[recomendación]`.
+- No inventes datos. Distinguí hechos, inferencias y recomendaciones mediante la redacción y las secciones correspondientes, sin prefijos ni etiquetas como `[hecho]`, `[inferencia]` o `[recomendación]`.
 - Si una fuente falta, decilo explícitamente.
 - No escribas en Linear sin aprobación humana.
 - Linear contiene issues, proyectos, ciclos y comentarios.

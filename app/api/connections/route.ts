@@ -15,10 +15,6 @@ export async function GET() {
           status: "connected",
           detail: `Conector ${linear.connector.uid}`,
         },
-        github: {
-          status: "not-configured",
-          detail: "Todavía no existe un repositorio",
-        },
       },
       { headers: { "cache-control": "no-store" } },
     );
@@ -31,10 +27,6 @@ export async function GET() {
     return Response.json(
       {
         linear: { status: "disconnected", detail },
-        github: {
-          status: "not-configured",
-          detail: "Todavía no existe un repositorio",
-        },
       },
       { headers: { "cache-control": "no-store" } },
     );

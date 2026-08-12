@@ -9,7 +9,6 @@ import {
   CalendarDays,
   Check,
   Gauge,
-  GitBranch,
   Link2,
   ListChecks,
   Plus,
@@ -18,7 +17,7 @@ import {
   Trash2,
   Users,
 } from "lucide-react";
-import { type FormEvent, useEffect, useRef, useState } from "react";
+import { type FormEvent, useEffect, useState } from "react";
 import {
   Conversation,
   ConversationContent,
@@ -33,20 +32,12 @@ import {
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import { AgentMessage } from "./agent-message";
 
 type AgentName = "control-tower" | "backlog-refiner" | "meeting-steering";
 type EventType = "hito" | "steering" | "parcial" | "final";
-type ConnectionStatus = "loading" | "connected" | "disconnected" | "not-configured";
+type ConnectionStatus = "loading" | "connected" | "disconnected";
 
 type AgentDef = {
   id: AgentName;
@@ -68,8 +59,7 @@ type CalendarEvent = {
 };
 
 type ConnectionState = { status: ConnectionStatus; detail: string };
-type Connections = { linear: ConnectionState; github: ConnectionState };
-type AgentCommand = { id: string; agent: AgentName; prompt: string };
+type Connections = { linear: ConnectionState };
 type AgentStatus = ReturnType<typeof useEveAgent>["status"];
 const AGENTS: readonly AgentDef[] = [
   {
@@ -122,12 +112,10 @@ const PROJECT_DATES: readonly CalendarEvent[] = [
 const STORAGE_KEY = "splitit-academic-dates";
 const INITIAL_CONNECTIONS: Connections = {
   linear: { status: "loading", detail: "Verificando" },
-  github: { status: "not-configured", detail: "No configurado" },
 };
 
 export function AgentChat() {
   const [selected, setSelected] = useState<AgentName>("control-tower");
-  const [command, setCommand] = useState<AgentCommand>();
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [connections, setConnections] = useState<Connections>(INITIAL_CONNECTIONS);
   const [refreshing, setRefreshing] = useState(false);
@@ -151,7 +139,6 @@ export function AgentChat() {
     } catch {
       setConnections({
         linear: { status: "disconnected", detail: "Sin conexión" },
-        github: INITIAL_CONNECTIONS.github,
       });
     } finally {
       setRefreshing(false);
@@ -165,11 +152,6 @@ export function AgentChat() {
   const saveEvents = (next: CalendarEvent[]) => {
     setEvents(next);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-  };
-
-  const run = (agent: AgentName, prompt: string) => {
-    setSelected(agent);
-    setCommand({ id: crypto.randomUUID(), agent, prompt });
   };
 
   const selectedAgent = AGENTS.find((agent) => agent.id === selected) ?? AGENTS[0];
@@ -232,10 +214,7 @@ export function AgentChat() {
 
         <AgentWorkspace
           agent={selectedAgent}
-          command={command?.agent === selected ? command : undefined}
           key={selected}
-          onCommandConsumed={(id) => setCommand((current) => current?.id === id ? undefined : current)}
-          onRun={(prompt) => run(selected, prompt)}
         />
       </section>
     </main>
@@ -269,7 +248,6 @@ function ProjectPanel({
           <Agenda events={events} onChange={onChange} />
           <div className="mt-3 border-t pt-3">
             <ConnectionRow icon={BookOpenCheck} label="Linear" state={connections.linear} />
-            <ConnectionRow icon={GitBranch} label="GitHub" state={connections.github} />
             <Button className="mt-1 w-full justify-start" disabled={refreshing} onClick={onRefresh} size="sm" variant="ghost">
               <RefreshCw className={cn(refreshing && "animate-spin")} /> Revisar conexiones
             </Button>
@@ -312,7 +290,6 @@ function ProjectPanel({
         </summary>
         <div className="space-y-1 px-3 pb-3">
           <ConnectionRow icon={BookOpenCheck} label="Linear" state={connections.linear} />
-          <ConnectionRow icon={GitBranch} label="GitHub" state={connections.github} />
           <Button className="mt-1 w-full justify-start" disabled={refreshing} onClick={onRefresh} size="sm" variant="ghost">
             <RefreshCw className={cn(refreshing && "animate-spin")} /> Revisar conexiones
           </Button>
@@ -380,14 +357,16 @@ function Agenda({ events, onChange }: { events: CalendarEvent[]; onChange: (even
         <form className="mt-2 space-y-2 border-t pt-3" onSubmit={addEvent}>
           <Input aria-label="Nombre del evento" onChange={(event) => setTitle(event.target.value)} placeholder="Nombre" value={title} />
           <Input aria-label="Fecha del evento" onChange={(event) => setDate(event.target.value)} type="date" value={date} />
-          <Select onValueChange={(value) => setType(value as EventType)} value={type}>
-            <SelectTrigger className="w-full" aria-label="Tipo de evento"><SelectValue /></SelectTrigger>
-            <SelectContent><SelectGroup>
-              <SelectItem value="steering">Steering</SelectItem>
-              <SelectItem value="parcial">Revisión</SelectItem>
-              <SelectItem value="final">Entrega</SelectItem>
-            </SelectGroup></SelectContent>
-          </Select>
+          <select
+            aria-label="Tipo de evento"
+            className="h-9 w-full rounded-md border border-input bg-card px-3 text-sm outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
+            onChange={(event) => setType(event.target.value as EventType)}
+            value={type}
+          >
+            <option value="steering">Steering</option>
+            <option value="parcial">Revisión</option>
+            <option value="final">Entrega</option>
+          </select>
           <div className="flex gap-2">
             <Button className="flex-1" disabled={!title.trim() || !date} size="sm" type="submit">Agregar</Button>
             <Button onClick={() => setAdding(false)} size="sm" type="button" variant="ghost">Cancelar</Button>
@@ -402,17 +381,7 @@ function Agenda({ events, onChange }: { events: CalendarEvent[]; onChange: (even
   );
 }
 
-function AgentWorkspace({
-  agent: agentDef,
-  command,
-  onCommandConsumed,
-  onRun,
-}: {
-  agent: AgentDef;
-  command?: AgentCommand;
-  onCommandConsumed: (id: string) => void;
-  onRun: (prompt: string) => void;
-}) {
+function AgentWorkspace({ agent: agentDef }: { agent: AgentDef }) {
   const agent = useEveAgent({ agent: agentDef.id });
   const Icon = agentDef.icon;
   const isBusy = agent.status === "submitted" || agent.status === "streaming";
@@ -421,15 +390,7 @@ function AgentWorkspace({
   ) ?? false;
   const canSend = !isBusy && !hasPendingInput;
   const isEmpty = agent.data.messages.length === 0;
-  const consumedCommand = useRef<string | undefined>(undefined);
   const context = () => ({ date: new Date().toISOString(), project: "SplitIt", pm: "Marcos" });
-
-  useEffect(() => {
-    if (!command || isBusy || consumedCommand.current === command.id) return;
-    consumedCommand.current = command.id;
-    onCommandConsumed(command.id);
-    void agent.send(command.prompt, { clientContext: context() });
-  }, [command?.id, isBusy]);
 
   const handleSubmit = async (message: PromptInputMessage) => {
     const text = message.text.trim();
@@ -469,7 +430,7 @@ function AgentWorkspace({
                   className="group h-auto w-full justify-between rounded-none px-0 py-3.5 hover:bg-transparent hover:text-primary"
                   disabled={!canSend}
                   key={action.label}
-                  onClick={() => onRun(action.prompt)}
+                  onClick={() => void agent.send(action.prompt, { clientContext: context() })}
                   type="button"
                   variant="ghost"
                 >

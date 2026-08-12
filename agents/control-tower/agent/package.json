@@ -1,6 +1,0 @@
-{
-  "name": "control-tower",
-  "devDependencies": {
-    "microsandbox": "^0.6.8"
-  }
-}
