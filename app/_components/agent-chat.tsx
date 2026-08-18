@@ -2,6 +2,7 @@
 
 import type { UserContent } from "ai";
 import { useEveAgent } from "eve/react";
+import Link from "next/link";
 import {
   AlertCircleIcon,
   ArrowRight,
@@ -16,6 +17,7 @@ import {
   Settings2,
   Trash2,
   Users,
+  Wrench,
 } from "lucide-react";
 import { type FormEvent, useEffect, useState } from "react";
 import {
@@ -192,6 +194,21 @@ export function AgentChat() {
               </Button>
             );
           })}
+        </nav>
+
+        <nav className="border-t p-2 lg:px-2 lg:py-3" aria-label="Proyecto">
+          <Link
+            className="flex min-w-max items-center gap-3 rounded-md px-3 py-2.5 text-left text-muted-foreground transition-colors hover:bg-accent hover:text-foreground lg:min-w-0"
+            href="/skills"
+          >
+            <Wrench className="size-4 shrink-0" />
+            <span className="lg:min-w-0">
+              <span className="block text-sm font-medium lg:truncate">Skills</span>
+              <span className="hidden text-[11px] text-muted-foreground lg:block lg:truncate">
+                Herramientas por rol
+              </span>
+            </span>
+          </Link>
         </nav>
 
         <ProjectPanel
