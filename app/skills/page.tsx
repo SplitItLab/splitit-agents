@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { listSkills } from "@/lib/skills";
 
 export const metadata: Metadata = {
@@ -14,9 +15,12 @@ export default async function SkillsPage() {
   return (
     <main className="mx-auto flex w-full max-w-3xl flex-col gap-10 px-6 py-16">
       <header className="flex flex-col gap-2">
-        <p className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
-          SplitIt · Gestión
-        </p>
+        <Link
+          className="font-mono text-xs uppercase tracking-widest text-muted-foreground transition-colors hover:text-foreground"
+          href="/"
+        >
+          ← SplitIt · Workspace
+        </Link>
         <h1 className="text-3xl font-semibold tracking-tight text-foreground">Skills</h1>
         <p className="max-w-prose text-sm leading-relaxed text-muted-foreground">
           Herramientas de trabajo de cada rol. Son instrucciones versionadas en este repo, que
