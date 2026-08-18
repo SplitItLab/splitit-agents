@@ -73,7 +73,12 @@ export default async function SkillsPage() {
                   key={`${skill.role}/${skill.slug}`}
                   className="flex flex-col gap-1.5 rounded-lg border border-border bg-card p-5"
                 >
-                  <p className="font-mono text-sm text-card-foreground">/{skill.name}</p>
+                  <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+                    <p className="font-mono text-sm text-card-foreground">/{skill.name}</p>
+                    {skill.owner ? (
+                      <p className="font-mono text-xs text-muted-foreground">{skill.owner}</p>
+                    ) : null}
+                  </div>
                   <p className="text-sm leading-relaxed text-muted-foreground">{skill.description}</p>
                   <p className="font-mono text-xs text-muted-foreground">
                     skills/{skill.role}/{skill.slug}/SKILL.md
