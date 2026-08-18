@@ -27,14 +27,28 @@ no hay copias que se desincronicen.
 
 ## Escribir una skill
 
-Cada `SKILL.md` lleva frontmatter con `name` y `description`, y el cuerpo dice qué rol la
-usa, sobre qué datos opera y cuándo se corre.
+Cada `SKILL.md` arranca con este frontmatter:
+
+```yaml
+---
+name: nombre-en-kebab-case
+owner: "@handle-de-github"
+role: po | qa | tl
+description: Qué hace y cuándo conviene usarla. Es lo que decide si se invoca.
+---
+```
+
+`owner` es quien la escribió, igual que en el decision log: si algo no se entiende o hay
+que cambiarla, se sabe con quién hablar. Como los roles rotan, el autor no cambia aunque
+cambie el rol.
+
+El cuerpo dice sobre qué datos opera, cuándo se corre y qué devuelve.
 
 Una skill nace de una fricción real que ya pasó, no de completar una cuota. Si nadie la
 corre, conviene borrarla.
 
 ## Índice
 
-| Rol | Skill | Qué hace |
-|---|---|---|
-| PO | [revisar-diseno](po/revisar-diseno/SKILL.md) | Cruza una user story contra su diseño de Figma y anota las discrepancias en la issue |
+| Rol | Skill | Autor | Qué hace |
+|---|---|---|---|
+| PO | [revisar-diseno](po/revisar-diseno/SKILL.md) | @n-mangini | Cruza una user story contra su diseño de Figma y anota las discrepancias en la issue |

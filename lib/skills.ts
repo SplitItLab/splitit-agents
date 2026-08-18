@@ -9,6 +9,7 @@ export type Skill = {
   readonly slug: string;
   readonly name: string;
   readonly description: string;
+  readonly owner: string;
 };
 
 export type RoleGroup = {
@@ -69,6 +70,7 @@ async function readRole(role: Role): Promise<Skill[]> {
           slug: dirent.name,
           name: frontmatter.name ?? dirent.name,
           description: frontmatter.description ?? "",
+          owner: frontmatter.owner ?? "",
         };
       }),
   );
