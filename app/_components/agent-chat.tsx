@@ -166,7 +166,7 @@ export function AgentChat() {
           <span className="flex size-7 items-center justify-center rounded-md bg-foreground text-xs font-bold text-background">S</span>
           <div className="min-w-0">
             <p className="truncate text-sm font-semibold">SplitIt</p>
-            <p className="text-[11px] text-muted-foreground">Workspace de producto</p>
+            <p className="text-[11px] text-muted-foreground">Sala de control PM</p>
           </div>
         </div>
 
