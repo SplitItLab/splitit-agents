@@ -2,8 +2,9 @@
 
 Herramientas de trabajo de los roles de gestión, una carpeta por rol.
 
-Son markdown plano: las ejecuta Claude Code o Codex, no esta app. La app las lee de acá
-y las muestra; ellas no dependen de la app.
+Son markdown plano: las ejecuta el agente que tenga el equipo (Claude Code,
+Codex, Cursor, etc.), no esta app. La app las lee de acá y las muestra; ellas
+no dependen de la app.
 
 ## Estructura
 
@@ -53,3 +54,4 @@ corre, conviene borrarla.
 |---|---|---|---|
 | PO | [revisar-diseno](po/revisar-diseno/SKILL.md) | @n-mangini | Cruza una user story contra su diseño de Figma y anota las discrepancias en la issue |
 | TL | [migrar-proyecto](tl/migrar-proyecto/SKILL.md) | @lucasmonteverdi1 | Migra el esqueleto de un monorepo A (Spring Boot + Next.js + JWT) a B, sin copiar ejercicios ni secretos, y cierra con informe |
+| TL | [generar-tests-e2e](tl/generar-tests-e2e/SKILL.md) | @lucasmonteverdi1 | Genera tests E2E para una PR de un repo de aplicación, los pushea, y si fallan por un bug real pushea el fix en un commit aparte |
