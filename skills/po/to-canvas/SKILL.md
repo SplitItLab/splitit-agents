@@ -92,6 +92,8 @@ export type Screen = {
   title: string
   epic: string
   stories: Story[]
+  /** Fuera del canvas por ahora: la pantalla existe pero no se muestra. */
+  hidden?: boolean
 }
 
 export const screens: Screen[] = [ /* ... */ ]
@@ -107,10 +109,21 @@ Reglas al armarlo:
 - **`epic` agrupa la grilla.** Usar las épicas del backlog, no categorías inventadas.
 - **`route` es configuración interna.** Sirve para cargar el iframe, pero no se muestra en
   la interfaz del canvas.
+- **Esconder es un flag, no un borrado.** Cuando una épica todavía no se muestra —el diseño
+  no cerró, la conversación con el equipo va por otro lado— marcar sus pantallas con
+  `hidden: true` en vez de sacarlas del mapa. Borrarlas pierde las historias, los issues y
+  el trabajo de mapeo; el flag se revierte en un segundo.
 
-Helpers a exponer: `screensOfEpic`, `screensOfStory`, `findStory`, `allStories`,
-`issueUrl`, y `canvasHref(screen)` — que devuelve la dirección **dentro del canvas** de una
-pantalla, con `?estado=N` cuando no es la primera de su historia.
+Helpers a exponer: `visibleScreens`, `screensOfEpic`, `screensOfStory`, `findStory`,
+`allStories`, `issueUrl`, y `canvasHref(screen)` — que devuelve la dirección **dentro del
+canvas** de una pantalla, con `?estado=N` cuando no es la primera de su historia.
+
+`visibleScreens` es `screens` sin las escondidas, y es de donde tienen que derivar la
+grilla, las épicas, el conteo de la cabecera y `allStories` —si no, queda una épica vacía
+con su título, o un contador que promete pantallas que no están. `screensOfStory` y
+`findStory` siguen mirando el mapa completo, para no romper una dirección ya repartida.
+Esconder una pantalla saca del aire las direcciones de las historias que solo vivían ahí:
+si esas URLs ya circularon en tickets, avisarlo.
 
 ### 4. La grilla — `/canvas`
 
@@ -160,6 +173,33 @@ darle un alias estable como `/inicio` antes de cambiar la raíz, y actualizar el
 dejar una pantalla del mapa con `route: '/'`: su iframe cargaría el canvas y produciría
 una recursión visual.
 
+#### El preview del enlace dice qué es esto
+
+El canvas se comparte pegando el link en Slack, WhatsApp o un ticket, así que el preview es
+lo primero que el equipo lee. Un prototipo generado con IA arrastra la metadata que dejó el
+generador —marketing del producto, un `generator: 'v0.app'`— y el enlace termina
+presentándose como si fuera la app en producción: exactamente lo que la leyenda de la
+cabecera trata de evitar, desmentido antes de que nadie abra la página.
+
+Alinear el título y la descripción del layout raíz con lo que el artefacto es, y declarar
+`openGraph` y `twitter` con la misma copy: sin eso, cada plataforma improvisa a partir del
+`<title>` y lo recorta a su gusto.
+
+```tsx
+const title = 'SplitIt · prototipo'
+const description =
+  'Canvas de pantallas del prototipo. Datos de ejemplo, no es la app en produccion.'
+
+export const metadata: Metadata = {
+  title,
+  description,
+  openGraph: { title, description, type: 'website' },
+  twitter: { card: 'summary', title, description },
+}
+```
+
+Es la misma leyenda de la cabecera del canvas, dicha antes de entrar.
+
 ### 5. La ficha — `/canvas/[story]`
 
 La dirección estable de cada historia. Es la URL que el PM pega en sus tickets, así que
@@ -207,6 +247,7 @@ Con el server levantado:
 
 ```bash
 npx tsc --noEmit
+curl -s http://localhost:3000/canvas | grep -o '<title>[^<]*\|og:description[^>]*'  # no debe hablar del producto en produccion
 curl -s -o /dev/null -w "%{http_code}\n" http://localhost:3000/canvas
 curl -s -o /dev/null -w "%{http_code}\n" http://localhost:3000/canvas/SPLT-001
 curl -s -o /dev/null -w "%{http_code}\n" http://localhost:3000/canvas/SPLT-999   # 404
