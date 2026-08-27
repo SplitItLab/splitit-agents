@@ -53,5 +53,6 @@ corre, conviene borrarla.
 | Rol | Skill | Autor | Qué hace |
 |---|---|---|---|
 | PO | [revisar-diseno](po/revisar-diseno/SKILL.md) | @n-mangini | Cruza una user story contra su diseño de Figma y anota las discrepancias en la issue |
+| PO | [to-canvas](po/to-canvas/SKILL.md) | @n-mangini | Convierte un prototipo navegable en un canvas de pantallas, con una dirección estable por historia |
 | TL | [migrar-proyecto](tl/migrar-proyecto/SKILL.md) | @lucasmonteverdi1 | Migra el esqueleto de un monorepo A (Spring Boot + Next.js + JWT) a B, sin copiar ejercicios ni secretos, y cierra con informe |
 | TL | [generar-tests-e2e](tl/generar-tests-e2e/SKILL.md) | @lucasmonteverdi1 | Genera tests E2E para una PR de un repo de aplicación, los pushea, y si fallan por un bug real pushea el fix en un commit aparte |
