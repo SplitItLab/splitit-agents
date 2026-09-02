@@ -2,6 +2,7 @@
 name: to-canvas
 owner: "@n-mangini"
 role: po
+created: 2026-08-27
 description: Convierte una app mockeada (prototipo navegable generado con IA) en un canvas de pantallas legible como herramienta de diseño, con una dirección estable por historia. Usar cuando un PO tiene un prototipo funcionando y necesita que sirva de especificación visual del backlog, en lugar de un Figma.
 ---
 

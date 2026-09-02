@@ -2,6 +2,7 @@
 name: revisar-diseno
 owner: "@n-mangini"
 role: po
+created: 2026-08-18
 description: Cruza una user story de SplitIt contra su diseño de Figma, reporta las discrepancias y las anota en la issue. Usar cuando llega o cambia el diseño de una pantalla, antes de que la historia entre a un ciclo, o cuando el usuario pide revisar/contrastar una historia contra el Figma.
 ---
 

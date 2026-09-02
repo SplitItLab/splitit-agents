@@ -10,6 +10,8 @@ export type Skill = {
   readonly name: string;
   readonly description: string;
   readonly owner: string;
+  /** `created` del frontmatter (YYYY-MM-DD). Vacío si la skill no lo declara. */
+  readonly created: string;
 };
 
 export type RoleGroup = {
@@ -71,13 +73,22 @@ async function readRole(role: Role): Promise<Skill[]> {
           name: frontmatter.name ?? dirent.name,
           description: frontmatter.description ?? "",
           owner: frontmatter.owner ?? "",
+          created: frontmatter.created ?? "",
         };
       }),
   );
 
+  // Cronologico: la lista se lee como la historia del toolkit, de la skill mas
+  // vieja a la mas nueva. Las que no declaran `created` caen al final, ordenadas
+  // por nombre, para que la falta se note en vez de colarse arriba.
   return skills
     .filter((skill): skill is Skill => skill !== null)
-    .sort((a, b) => a.name.localeCompare(b.name, "es"));
+    .sort((a, b) => {
+      if (a.created && b.created) return a.created.localeCompare(b.created);
+      if (a.created) return -1;
+      if (b.created) return 1;
+      return a.name.localeCompare(b.name, "es");
+    });
 }
 
 export async function listSkills(): Promise<RoleGroup[]> {

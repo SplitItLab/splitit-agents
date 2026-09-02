@@ -1,5 +1,8 @@
 ---
 name: frontend-screenshots
+owner: "@FranManfredi"
+role: qa
+created: 2026-08-31
 description: Add or maintain an automated frontend screenshot workflow using Playwright and GitHub Actions, including configurable routes, desktop/mobile captures, downloadable artifacts, and a simple HTML gallery. Use when the user asks for frontend screenshots, screenshot artifacts, or a Playwright-based capture pipeline; do not use for visual regression comparisons or paid screenshot services.
 ---
 

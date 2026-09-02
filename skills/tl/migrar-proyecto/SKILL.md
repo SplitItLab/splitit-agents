@@ -2,6 +2,7 @@
 name: migrar-proyecto
 owner: "@lucasmonteverdi1"
 role: tl
+created: 2026-08-20
 description: Migra el esqueleto técnico de un monorepo A (Spring Boot + Next.js) a un proyecto B — layout, manifiestos, lockfiles, Docker y andamiaje JWT — sin copiar ejercicios, datos ni secretos, y cierra con un informe de la migración. Usar al arrancar un repo nuevo que reutiliza el stack de la capacitación (Sistema de Biblioteca), o cuando pidan migrar/copiar la config de un proyecto A a un B.
 ---
 

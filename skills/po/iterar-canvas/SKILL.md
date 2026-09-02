@@ -2,6 +2,7 @@
 name: iterar-canvas
 owner: "@n-mangini"
 role: po
+created: 2026-09-02
 description: Trabaja una historia sobre el canvas ya construido: cruza sus criterios de aceptación contra la pantalla, cierra los huecos iterando con el PO, y deja la issue y el deploy al día. Usar cuando el PO quiere avanzar una historia sobre el prototipo, revisar si una pantalla cumple sus criterios, o iterar el diseño de una pantalla que ya existe.
 ---
 

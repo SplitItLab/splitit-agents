@@ -2,6 +2,7 @@
 name: generar-tests-e2e
 owner: "@lucasmonteverdi1"
 role: tl
+created: 2026-08-21
 description: Genera tests E2E para una feature de una PR abierta en un repo de aplicación, los pushea, y si fallan por un bug (no por el armado del test) pushea el fix en un commit aparte. Usar al comentar /e2e en una PR lista para review, o al pedir "generame los E2E de esta PR".
 ---
 

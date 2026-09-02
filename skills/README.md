@@ -35,6 +35,7 @@ Cada `SKILL.md` arranca con este frontmatter:
 name: nombre-en-kebab-case
 owner: "@handle-de-github"
 role: po | qa | tl
+created: YYYY-MM-DD
 description: Qué hace y cuándo conviene usarla. Es lo que decide si se invoca.
 ---
 ```
@@ -42,6 +43,10 @@ description: Qué hace y cuándo conviene usarla. Es lo que decide si se invoca.
 `owner` es quien la escribió, igual que en el decision log: si algo no se entiende o hay
 que cambiarla, se sabe con quién hablar. Como los roles rotan, el autor no cambia aunque
 cambie el rol.
+
+`created` es la fecha en que se agregó. La página de skills ordena por ese campo, de la más
+vieja a la más nueva, para que la lista se lea como la historia del toolkit. Una skill sin
+`created` no rompe nada, pero cae al final de su rol.
 
 El cuerpo dice sobre qué datos opera, cuándo se corre y qué devuelve.
 
@@ -56,4 +61,5 @@ corre, conviene borrarla.
 | TL | [migrar-proyecto](tl/migrar-proyecto/SKILL.md) | @lucasmonteverdi1 | Migra el esqueleto de un monorepo A (Spring Boot + Next.js + JWT) a B, sin copiar ejercicios ni secretos, y cierra con informe |
 | TL | [generar-tests-e2e](tl/generar-tests-e2e/SKILL.md) | @lucasmonteverdi1 | Genera tests E2E para una PR de un repo de aplicación, los pushea, y si fallan por un bug real pushea el fix en un commit aparte |
 | PO | [to-canvas](po/to-canvas/SKILL.md) | @n-mangini | Convierte un prototipo navegable en un canvas de pantallas, con una dirección estable por historia |
+| QA | [frontend-screenshots](qa/frontend-screenshots/SKILL.md) | @FranManfredi | Arma un pipeline de screenshots de frontend con Playwright y GitHub Actions, con capturas desktop/mobile, artefacto descargable y galería HTML |
 | PO | [iterar-canvas](po/iterar-canvas/SKILL.md) | @n-mangini | Trabaja una historia sobre el canvas ya construido: cruza sus criterios contra la pantalla, cierra los huecos con el PO, y deja la issue y el deploy al día |
