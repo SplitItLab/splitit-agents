@@ -1,9 +1,6 @@
 ---
 name: frontend-screenshots
-owner: "@FranManfredi"
-role: qa
-created: 2026-08-31
-description: Add or maintain an automated frontend screenshot workflow using Playwright and GitHub Actions, including configurable routes, desktop/mobile captures, downloadable artifacts, and a simple HTML gallery. Use when the user asks for frontend screenshots, screenshot artifacts, or a Playwright-based capture pipeline; do not use for visual regression comparisons or paid screenshot services.
+description: Add or maintain an automated frontend screenshot workflow using Playwright and GitHub Actions, including configurable routes, desktop/mobile captures, per-page DOM/HTML snapshots, downloadable artifacts, and a simple HTML gallery. Use when the user asks for frontend screenshots, screenshot artifacts, DOM snapshots, or a Playwright-based capture pipeline; do not use for visual regression comparisons or paid screenshot services.
 ---
 
 # Frontend Screenshots
@@ -19,6 +16,7 @@ Create a workflow that can run locally and in GitHub Actions to:
 - visit a configurable list of routes;
 - capture Chromium screenshots for desktop and mobile;
 - write PNGs under `screenshots/`;
+- write reduced per-page HTML/DOM snapshots next to the PNGs under `screenshots/`;
 - generate a simple `screenshots/index.html` gallery;
 - upload the screenshot folder as a GitHub Actions artifact.
 - comment on the pull request with a direct link to the artifact so reviewers do not need to search inside the Actions run.
@@ -71,11 +69,23 @@ Screenshots must be `fullPage` and written in this shape:
 ```text
 screenshots/
 ├── desktop/
-│   └── page-name.png
+│   ├── page-name.png
+│   └── page-name.html
 ├── mobile/
-│   └── page-name.png
+│   ├── page-name.png
+│   └── page-name.html
 └── index.html
 ```
+
+For every PNG, also write a sibling `.html` DOM snapshot with the same page name and viewport. This snapshot is not the gallery; it is machine-readable review input for downstream automation. Generate it from the loaded Playwright page after fonts/images have settled.
+
+The per-page HTML snapshot should be useful but not huge. Prefer a structured text file that contains:
+
+- a short metadata header with viewport, page name, and route path;
+- a JSON summary of visible elements, including tag, visible text, accessible label, placeholder, input type, class name, approximate bounding box, and selected computed styles such as color, background color, font size, font weight, display, and border radius;
+- sanitized HTML from `document.documentElement.outerHTML`.
+
+When building the sanitized HTML, remove scripts, style tags, noscript, SVG content, noisy `data-*` attributes, and `srcset`. Trim excessive whitespace and cap large HTML strings so artifacts and downstream prompts stay manageable. Do not include secrets, local storage values, cookies, or request headers.
 
 Prefer `webServer` in `playwright.config.ts` when it fits the app. Use the repo's existing dev command, bound to a deterministic local host/port when possible. Make `reuseExistingServer` true outside CI and false in CI.
 
@@ -90,6 +100,8 @@ The gallery should show:
 - each page name;
 - each PNG displayed inline;
 - a link to open the original PNG.
+
+The gallery does not need to display the DOM snapshots, but the artifact must include them.
 
 ## Package Scripts
 
@@ -127,7 +139,7 @@ It should:
 - install dependencies from the lockfile (`npm ci`, `pnpm install --frozen-lockfile`, `yarn install --immutable`, etc.);
 - install Chromium and OS dependencies with Playwright, typically `playwright install --with-deps chromium`;
 - run the screenshots script;
-- upload the whole screenshots directory as artifact `frontend-screenshots`;
+- upload the whole screenshots directory as artifact `frontend-screenshots`, including PNGs, per-page `.html` DOM snapshots, and the gallery;
 - add the artifact URL and workflow run URL to `$GITHUB_STEP_SUMMARY`;
 - optionally attempt a direct PR comment in a separate job in the screenshot workflow for same-repository PRs, but do not give write permissions to the job that checks out and executes pull request code;
 - fail if the app cannot start or screenshots cannot be generated.
@@ -172,6 +184,7 @@ Add concise README documentation covering:
 - how to run screenshots locally;
 - how to run the GitHub Action manually;
 - where to download the artifact;
+- that the artifact includes PNG screenshots, the `index.html` gallery, and per-page `.html` DOM snapshots for review automation;
 - that pull request runs post or update a PR comment with the artifact link.
 - that the job summary contains the same artifact link if PR comments are not permitted.
 
@@ -184,6 +197,7 @@ Before finishing, run the relevant checks that exist in the frontend package:
 - format check, if available;
 - Playwright config/test listing;
 - the screenshot command itself when the local environment can install browsers and bind the local server port.
+- verify that each configured page/viewport produced both `page-name.png` and `page-name.html`.
 
 If local browser install or server binding is blocked by sandbox/network permissions, report exactly which step was blocked and verify everything else possible.
 

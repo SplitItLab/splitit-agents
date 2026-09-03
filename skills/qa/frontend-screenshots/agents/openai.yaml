@@ -1,0 +1,3 @@
+interface:
+  display_name: "Frontend Screenshots"
+  short_description: "Add Playwright screenshot workflows with GitHub Actions artifacts"
