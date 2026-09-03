@@ -31,6 +31,15 @@ Abrí `http://localhost:3000`.
 
 El dashboard muestra el estado de Linear y GitHub. Linear se verifica server-side mediante Vercel Connect; la UI nunca recibe el token. GitHub figura como no configurado hasta que exista un repositorio real.
 
+La sección **Horas reales** lee los archivos Markdown de `time-entries/` y guarda
+lo que Linear no tiene: el tiempo real contra el estimado y las dificultades de
+cada ticket. Un archivo por ticket, un número por archivo. Un punto de Linear se
+lee como una hora, así que estimado y real se comparan directo. Los tickets sin
+horas se listan igual, marcados como *Sin cargar*. La sección es de solo lectura:
+para registrar tiempo se edita el Markdown y se hace commit. También exporta todo
+como CSV compatible con Excel; ver `time-entries/README.md`. Cada archivo representa un ticket y cada fila
+de su tabla una carga fechada.
+
 Las fechas de Steering, parciales y finales se guardan en `localStorage`: quedan en ese navegador y dispositivo. No se sincronizan entre integrantes porque esta versión no usa base de datos.
 
 Los tres agentes usan OpenAI directamente mediante `@ai-sdk/openai`. El modelo está fijado en código como `gpt-5.4-mini`. El consumo se descuenta de la cuenta asociada a `OPENAI_API_KEY`.

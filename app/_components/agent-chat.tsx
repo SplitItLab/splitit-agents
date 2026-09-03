@@ -9,6 +9,7 @@ import {
   BookOpenCheck,
   CalendarDays,
   Check,
+  Clock3,
   Gauge,
   Link2,
   ListChecks,
@@ -197,6 +198,18 @@ export function AgentChat() {
         </nav>
 
         <nav className="border-t p-2 lg:px-2 lg:py-3" aria-label="Proyecto">
+          <Link
+            className="flex min-w-max items-center gap-3 rounded-md px-3 py-2.5 text-left text-muted-foreground transition-colors hover:bg-accent hover:text-foreground lg:min-w-0"
+            href="/horas"
+          >
+            <Clock3 className="size-4 shrink-0" />
+            <span className="lg:min-w-0">
+              <span className="block text-sm font-medium lg:truncate">Horas reales</span>
+              <span className="hidden text-[11px] text-muted-foreground lg:block lg:truncate">
+                Esfuerzo por ticket
+              </span>
+            </span>
+          </Link>
           <Link
             className="flex min-w-max items-center gap-3 rounded-md px-3 py-2.5 text-left text-muted-foreground transition-colors hover:bg-accent hover:text-foreground lg:min-w-0"
             href="/skills"
